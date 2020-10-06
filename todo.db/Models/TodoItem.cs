@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace todo.db.api.Database.Models
+namespace todo.db.Models
 {
     public class TodoItem
     {

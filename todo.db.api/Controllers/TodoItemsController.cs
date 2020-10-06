@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using todo.db.api.Database;
 using todo.db.api.Mappers;
 using todo.db.api.Models;
 

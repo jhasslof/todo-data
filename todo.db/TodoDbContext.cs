@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using todo.db.api.Database.Models;
+using todo.db.Models;
 
-namespace todo.db.api.Database
+namespace todo.db
 {
     public class TodoDbContext : DbContext, ITodoDbContext
     {
@@ -75,14 +75,5 @@ namespace todo.db.api.Database
 
         private bool TodoItemExists(long id) =>
             TodoItems.Any(e => e.TodoItemId == id);
-    }
-
-    public interface ITodoDbContext
-    {
-        Task<List<TodoItem>> ListTodoItems();
-        Task<TodoItem> Get(long id);
-        Task Update(TodoItem editItem);
-        Task Delete(long id);
-        Task<TodoItem> Create(TodoItem newItem);
     }
 }

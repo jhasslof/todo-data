@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using todo.db.api.Database.Models;
 using todo.db.api.Models;
+using todo.db.Models;
 
 namespace todo.db.api.Mappers
 {
