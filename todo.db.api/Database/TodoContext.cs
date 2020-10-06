@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using todo.db.api.Models;
+using todo.db.api.Database.Models;
 
 namespace todo.db.api.Database
 {

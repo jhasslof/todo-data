@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace todo.db.api.Models
+namespace todo.db.api.Database.Models
 {
     public class TodoItem
     {

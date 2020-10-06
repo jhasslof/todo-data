@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using todo.db.api.Database;
-using todo.db.api.Models;
+using todo.db.api.Database.Models;
 
 namespace todo.db.api.Controllers
 {
