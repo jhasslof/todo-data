@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "todo.db.api", "todo.db.api\todo.db.api.csproj", "{ABCE194D-C176-492C-93A0-607536758E80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "todo.db.api", "todo.db.api\todo.db.api.csproj", "{ABCE194D-C176-492C-93A0-607536758E80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "todo.db", "todo.db\todo.db.csproj", "{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,9 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{ABCE194D-C176-492C-93A0-607536758E80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -30,5 +29,23 @@ Global
 		{ABCE194D-C176-492C-93A0-607536758E80}.Release|x64.Build.0 = Release|Any CPU
 		{ABCE194D-C176-492C-93A0-607536758E80}.Release|x86.ActiveCfg = Release|Any CPU
 		{ABCE194D-C176-492C-93A0-607536758E80}.Release|x86.Build.0 = Release|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Debug|x64.Build.0 = Debug|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Debug|x86.Build.0 = Debug|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Release|x64.ActiveCfg = Release|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Release|x64.Build.0 = Release|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Release|x86.ActiveCfg = Release|Any CPU
+		{2242A5E4-0CB0-4DD8-B14F-4105E0BFEC67}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A69ECB9-1366-4459-8D86-1742F3C73D59}
 	EndGlobalSection
 EndGlobal
