@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using todo.db.api.Database;
-using todo.db.api.Database.Models;
+using todo.db.api.Mappers;
+using todo.db.api.Models;
 
 namespace todo.db.api.Controllers
 {
@@ -14,63 +12,62 @@ namespace todo.db.api.Controllers
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
-        private readonly TodoContext _context;
+        private readonly ITodoDbContext _context;
 
-        public TodoItemsController(TodoContext context)
+        public TodoItemsController(ITodoDbContext context)
         {
             _context = context;
         }
 
         // GET: api/TodoItems
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
-            return await _context.TodoItems.ToListAsync();
+            return TodoItemDTOMapper.Map(
+                await _context.ListTodoItems()
+                );
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItemDto = TodoItemDTOMapper.Map(
+                                await _context.Get(id)
+                                );
 
-            if (todoItem == null)
+            if (todoItemDto == null)
             {
                 return NotFound();
             }
-
-            return todoItem;
+            return todoItemDto;
         }
 
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
+        public async Task<IActionResult> UpdateTodoItem(long id, TodoItemDTO todoItemDTO)
         {
-            if (id != todoItem.Id)
+            if (id != todoItemDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(todoItem).State = EntityState.Modified;
+            var todoItem = await _context.Get(id);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+            TodoItemMapper.Fill(todoItem, todoItemDTO);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.Update(todoItem);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (ApplicationException)
             {
-                if (!TodoItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
-
             return NoContent();
         }
 
@@ -78,33 +75,39 @@ namespace todo.db.api.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        public async Task<ActionResult<TodoItemDTO>> CreateTodoItem(TodoItemDTO todoItemDTO)
         {
-            _context.TodoItems.Add(todoItem);
-            await _context.SaveChangesAsync();
+            if (0 != todoItemDTO.Id)
+            {
+                return BadRequest();
+            }
 
-            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);
+            var todoItem = TodoItemMapper.Map(todoItemDTO);
+
+            todoItem = await _context.Create(todoItem);
+
+            return CreatedAtAction(
+                nameof(GetTodoItem),
+                new { id = todoItem.TodoItemId },
+                TodoItemDTOMapper.Map(todoItem));
         }
 
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<TodoItem>> DeleteTodoItem(long id)
+        public async Task<IActionResult> DeleteTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
-            if (todoItem == null)
+            try
+            {
+                await _context.Delete(id);
+            }
+            catch(ApplicationException)
             {
                 return NotFound();
             }
 
-            _context.TodoItems.Remove(todoItem);
-            await _context.SaveChangesAsync();
-
-            return todoItem;
+            return NoContent();
         }
 
-        private bool TodoItemExists(long id)
-        {
-            return _context.TodoItems.Any(e => e.Id == id);
-        }
+
     }
 }
