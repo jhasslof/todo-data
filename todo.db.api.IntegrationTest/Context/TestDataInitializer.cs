@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using todo.db.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace todo.db.api.IntegrationTest.Context
 {
@@ -9,21 +11,18 @@ namespace todo.db.api.IntegrationTest.Context
     {
         private static readonly object _lock = new object();
 
-        public static List<TodoItem> GetSeedingTodoItems() => new List<TodoItem>() {
-                 new TodoItem { Name = "Go shopping", IsComplete = false},
-                 new TodoItem { Name = "feed cat", IsComplete = false }
-            };
-
-
-        internal static void InitializeDbForTests(ITodoDbTestContext db)
+        internal static void InitializeDbForTests(ITodoDbTestContext db, IEnumerable<TodoItem> todoItems)
         {
             lock (_lock)
             {
-                db.Seed<TodoItem>(GetSeedingTodoItems());
+                if (!db.HasItems<TodoItem>())
+                {
+                    db.Seed<TodoItem>(todoItems);
+                }
             }
         }
 
-        public static void ReinitializeDbForTests(ITodoDbTestContext db)
+        public static void ReinitializeDbForTests(ITodoDbTestContext db, IEnumerable<TodoItem> todoItems)
         {
             // While a lock is held, the thread that holds the lock can again acquire and release the lock,
             // so should be ok to call the InitializeDbForTests() with the same lock.
@@ -31,7 +30,7 @@ namespace todo.db.api.IntegrationTest.Context
             lock (_lock)
             {
                 db.Clean<TodoItem>();
-                InitializeDbForTests(db);
+                InitializeDbForTests(db, todoItems);
             }
         }
     }

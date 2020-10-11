@@ -17,6 +17,18 @@ namespace todo.db.api.IntegrationTest.Context
             _options = options;
         }
 
+        IEnumerable<TModel> ITodoDbTestContext.List<TModel>() where TModel : class
+        {
+            Database.EnsureCreated();
+            return Set<TModel>().ToArray();
+        }
+
+        bool ITodoDbTestContext.HasItems<TModel>() where TModel : class
+        {
+            Database.EnsureCreated();
+            return Set<TModel>().Any();
+        }
+
         void ITodoDbTestContext.Seed<TModel>(IEnumerable<TModel> seedTodoItems) where TModel : class
         {
             Database.EnsureCreated();
@@ -26,6 +38,7 @@ namespace todo.db.api.IntegrationTest.Context
 
         void ITodoDbTestContext.Clean<TModel>() where TModel : class
         {
+            Database.EnsureCreated();
             var itemsToRemove = Set<TModel>();
             if (itemsToRemove.Any())
             {
