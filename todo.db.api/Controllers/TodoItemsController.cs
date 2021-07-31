@@ -7,7 +7,7 @@ using todo.db.api.Models;
 
 namespace todo.db.api.Controllers
 {
-    [Route("api/TodoItems")]
+    [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
@@ -19,6 +19,7 @@ namespace todo.db.api.Controllers
         }
 
         // GET: api/TodoItems
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
             return TodoItemDTOMapper.Map(
