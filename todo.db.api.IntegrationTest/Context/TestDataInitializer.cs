@@ -11,18 +11,18 @@ namespace todo.db.api.IntegrationTest.Context
     {
         private static readonly object _lock = new object();
 
-        internal static void InitializeDbForTests(ITodoDbTestContext db, IEnumerable<TodoItem> todoItems)
+        internal static void InitializeDbForTests(ITodoDbTestContext db, IEnumerable<TodoItem> todoItems, bool identityInsert = false)
         {
             lock (_lock)
             {
                 if (!db.HasItems<TodoItem>())
                 {
-                    db.Seed<TodoItem>(todoItems);
+                    db.Seed<TodoItem>(todoItems, identityInsert);
                 }
             }
         }
 
-        public static void ReinitializeDbForTests(ITodoDbTestContext db, IEnumerable<TodoItem> todoItems)
+        public static void ReinitializeDbForTests(ITodoDbTestContext db, IEnumerable<TodoItem> todoItems, bool identityInsert = false)
         {
             // While a lock is held, the thread that holds the lock can again acquire and release the lock,
             // so should be ok to call the InitializeDbForTests() with the same lock.
@@ -30,7 +30,7 @@ namespace todo.db.api.IntegrationTest.Context
             lock (_lock)
             {
                 db.Clean<TodoItem>();
-                InitializeDbForTests(db, todoItems);
+                InitializeDbForTests(db, todoItems, identityInsert);
             }
         }
     }

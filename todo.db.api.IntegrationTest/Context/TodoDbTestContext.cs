@@ -29,11 +29,38 @@ namespace todo.db.api.IntegrationTest.Context
             return Set<TModel>().Any();
         }
 
-        void ITodoDbTestContext.Seed<TModel>(IEnumerable<TModel> seedTodoItems) where TModel : class
+        void ITodoDbTestContext.Seed<TModel>(IEnumerable<TModel> seedTodoItems, bool identityInsert = false) where TModel : class
         {
             Database.EnsureCreated();
-            Set<TModel>().AddRange(seedTodoItems);
-            SaveChanges();
+            if (identityInsert)
+            {
+                SeedWithIdentityInsertOn(seedTodoItems);
+            }
+            else
+            {
+                Set<TModel>().AddRange(seedTodoItems);
+                SaveChanges();
+            }
+        }
+
+        //Ref: https://entityframeworkcore.com/saving-data-identity-insert
+        private void SeedWithIdentityInsertOn<TModel>(IEnumerable<TModel> seedTodoItems) where TModel : class
+        {
+            using (var seedContext = new TodoDbTestContext(_options))
+            {
+                seedContext.Set<TModel>().AddRange(seedTodoItems);
+                seedContext.Database.OpenConnection();
+                try
+                {
+                    seedContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [Todo].[TodoItem] ON;");
+                    seedContext.SaveChanges();
+                    seedContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [Todo].[TodoItem] OFF;");
+                }
+                finally
+                {
+                    seedContext.Database.CloseConnection();
+                }
+            }
         }
 
         void ITodoDbTestContext.Clean<TModel>() where TModel : class
