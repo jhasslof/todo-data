@@ -5,7 +5,14 @@ namespace todo.db.api.Mappers
 {
     public class TodoItemMapper
     {
-        public static TodoItem Map(TodoItemDTO todoItemDto) =>
+        IFeatureFlags _featureFlags;
+
+        public TodoItemMapper(IFeatureFlags featureFlags)
+        {
+            _featureFlags = featureFlags;
+        }
+
+        public TodoItem Map(TodoItemDTO todoItemDto) =>
             new TodoItem
             {
                 TodoItemId = todoItemDto.Id,
@@ -13,7 +20,7 @@ namespace todo.db.api.Mappers
                 IsComplete = todoItemDto.IsComplete
             };
 
-        public static void Fill(TodoItem todoItem, TodoItemDTO todoItemDto)
+        public void Fill(TodoItem todoItem, TodoItemDTO todoItemDto)
         {
             todoItem.Name = todoItemDto.Name;
             todoItem.IsComplete = todoItemDto.IsComplete;

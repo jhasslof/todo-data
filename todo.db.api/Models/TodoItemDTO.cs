@@ -6,9 +6,4 @@
         public string Name { get; set; }
         public bool IsComplete { get; set; }
     }
-
-    public class FeatureFlagDTO
-    {
-        public string Key { get; set; }
-    }
 }

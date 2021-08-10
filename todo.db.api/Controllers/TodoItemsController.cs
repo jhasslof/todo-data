@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using todo.db.api.Mappers;
 using todo.db.api.Models;
 
@@ -12,17 +13,21 @@ namespace todo.db.api.Controllers
     public class TodoItemsController : ControllerBase
     {
         private readonly ITodoDbContext _context;
+        private readonly TodoItemDTOMapper _todoItemDTOMapper;
+        private readonly TodoItemMapper _todoItemMapper;
 
-        public TodoItemsController(ITodoDbContext context)
+        public TodoItemsController(ITodoDbContext context, IFeatureFlags featureFlags)
         {
             _context = context;
+            _todoItemDTOMapper = new TodoItemDTOMapper(featureFlags);
+            _todoItemMapper = new TodoItemMapper(featureFlags);
         }
 
         // GET: api/TodoItems
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
-            return TodoItemDTOMapper.Map(
+            return _todoItemDTOMapper.Map(
                 await _context.ListTodoItems()
                 );
         }
@@ -31,7 +36,7 @@ namespace todo.db.api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
         {
-            var todoItemDto = TodoItemDTOMapper.Map(
+            var todoItemDto = _todoItemDTOMapper.Map(
                                 await _context.Get(id)
                                 );
 
@@ -58,7 +63,7 @@ namespace todo.db.api.Controllers
             {
                 return NotFound();
             }
-            TodoItemMapper.Fill(todoItem, todoItemDTO);
+            _todoItemMapper.Fill(todoItem, todoItemDTO);
 
             try
             {
@@ -82,14 +87,14 @@ namespace todo.db.api.Controllers
                 return BadRequest();
             }
 
-            var todoItem = TodoItemMapper.Map(todoItemDTO);
+            var todoItem = _todoItemMapper.Map(todoItemDTO);
 
             todoItem = await _context.Create(todoItem);
 
             return CreatedAtAction(
                 nameof(GetTodoItem),
                 new { id = todoItem.TodoItemId },
-                TodoItemDTOMapper.Map(todoItem));
+                _todoItemDTOMapper.Map(todoItem));
         }
 
         // DELETE: api/TodoItems/5

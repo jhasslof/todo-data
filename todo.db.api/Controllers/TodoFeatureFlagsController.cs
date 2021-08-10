@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,18 @@ namespace todo.db.api.Controllers
     public class TodoFeatureFlagsController : Controller
     {
 
+        private readonly IFeatureFlags _featureFlags;
+
+        public TodoFeatureFlagsController(IFeatureFlags featureFlags)
+        {
+            _featureFlags = featureFlags;
+        }
+
         // GET: api/TodoFeatureFlags
         [HttpGet]
         public IEnumerable<Models.FeatureFlagDTO> Index()
         {
-            return new[] { new Models.FeatureFlagDTO { Key = "todo-extra-info" } };
+            return _featureFlags.GetFeatureFlagList();
         }
     }
 }

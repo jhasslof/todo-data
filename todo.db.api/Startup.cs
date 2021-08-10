@@ -26,6 +26,7 @@ namespace todo.db.api
             services.AddDbContext<ITodoDbContext, TodoDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddScoped<IFeatureFlags>(p => new FeatureFlags(p.GetRequiredService<IConfiguration>(), p.GetRequiredService<ITodoDbContext>()));
             services.AddControllers();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
