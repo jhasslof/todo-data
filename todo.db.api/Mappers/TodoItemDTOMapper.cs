@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using todo.db.api.Models;
 using todo.db.Models;
 
@@ -6,23 +7,34 @@ namespace todo.db.api.Mappers
 {
     public class TodoItemDTOMapper
     {
-        public static TodoItemDTO Map(TodoItem todoItem)
+        IFeatureFlags _featureFlags;
+
+        public TodoItemDTOMapper(IFeatureFlags featureFlags)
+        {
+            _featureFlags = featureFlags;
+        }
+
+        public TodoItemDTO Map(TodoItem todoItem)
         {
             if (todoItem == null)
                 return null;
 
-            return new TodoItemDTO
+            var todoItemDto =  new TodoItemDTO
             {
                 Id = todoItem.TodoItemId,
                 Name = todoItem.Name,
                 IsComplete = todoItem.IsComplete
             };
-         }
+            if (_featureFlags.FeatureFlagIsActive(""))
+            {
+                //Do extra feature stuff
+            }
+            return todoItemDto;
+        }
 
-        public static List<TodoItemDTO> Map(List<TodoItem> todoItems)
+        public List<TodoItemDTO> Map(List<TodoItem> todoItems)
         {
             return todoItems.ConvertAll(new System.Converter<TodoItem, TodoItemDTO>(Map));
         }
-
     }
 }

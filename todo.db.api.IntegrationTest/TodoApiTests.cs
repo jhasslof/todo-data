@@ -32,15 +32,18 @@ namespace todo.db.api.IntegrationTest
 
         private HttpClient GetWebHostClientWithDefaultData()
         {
-            return _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    var sp = services.BuildServiceProvider();
-                    var db = sp.GetService<ITodoDbContext>() as ITodoDbTestContext;
-                    TestDataInitializer.ReinitializeDbForTests(db, GetSeedingTodoItems());
-                });
-            }).CreateClient();
+            var testFactoryWithSeedData = _factory.WithWebHostBuilder(builder =>
+                 {
+                     builder.ConfigureServices(services =>
+                     {
+                         var sp = services.BuildServiceProvider();
+                         var db = sp.GetService<ITodoDbContext>() as ITodoDbTestContext;
+                         TestDataInitializer.ReinitializeDbForTests(db, GetSeedingTodoItems(), identityInsert:true);
+                     });
+                 }
+             );
+
+            return testFactoryWithSeedData.CreateClient();
         }
 
         private HttpClient GetWebHostClientWithDataset(IEnumerable<TodoItem> todoItems)
@@ -56,9 +59,12 @@ namespace todo.db.api.IntegrationTest
             }).CreateClient();
         }
 
+        //
+
         [Theory]
         [InlineData("/api/todoitems")]
         [InlineData("/api/todoitems/1001")]
+        [InlineData("/api/todoitems/1002")]
         public async Task TodoItems_GetApiEndpoint_ReturnSuccessAndCorrectContentType(string url)
         {
             // Arrange

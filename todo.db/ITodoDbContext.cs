@@ -11,5 +11,6 @@ namespace todo.db
         public Task Update(TodoItem editItem);
         public Task Delete(long id);
         public Task<TodoItem> Create(TodoItem newItem);
+        public Task<List<SupportedFeature>> ListSupportedFeatures();
     }
 }

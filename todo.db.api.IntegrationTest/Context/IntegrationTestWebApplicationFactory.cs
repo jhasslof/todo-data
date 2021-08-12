@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using todo.db.Models;
+using System.Collections.Generic;
 
 namespace todo.db.api.IntegrationTest.Context
 {
@@ -15,23 +17,23 @@ namespace todo.db.api.IntegrationTest.Context
         {
             builder.ConfigureServices(services =>
             {
-                var descriptor = services.SingleOrDefault(d => 
+                var descriptor = services.SingleOrDefault(d =>
                                     d.ServiceType == typeof(ITodoDbContext));
 
-                services.Remove(descriptor);  //Removing default database context
+                bool isRemoved = services.Remove(descriptor);  //Removing default database context
 
                 var dbName = "TodoDbForTest"; // + System.Threading.Thread.CurrentThread.ManagedThreadId;
-                // Adding a custom test database context
+                //Adding a custom test database context
                 services.AddDbContext<ITodoDbContext, TodoDbTestContext>(options =>
                 {
                     // Having a fixed name of the memory database will make all instances of TestFixtures use the same db.
                     options.UseInMemoryDatabase(dbName);
                 });
-                var sp = services.BuildServiceProvider();
 
                 //TODO: Add custom logger
                 // Data is configured for each test to be idempotent.
                 //
+                //var sp = services.BuildServiceProvider();
                 //using (var scope = sp.CreateScope())
                 //{
                 //    var scopedServices = scope.ServiceProvider;
@@ -42,7 +44,7 @@ namespace todo.db.api.IntegrationTest.Context
                 //    try
                 //    {
                 //        //Now database is ready to receive test data
-                //        TestDataInitializer.InitializeDbForTests(db);
+                //        TestDataInitializer.InitializeDbForTests(db, GetSeedingTodoItems(), identityInsert:true);
                 //    }
                 //    catch (Exception ex)
                 //    {
@@ -53,5 +55,9 @@ namespace todo.db.api.IntegrationTest.Context
                 //}
             });
         }
+        //public static List<TodoItem> GetSeedingTodoItems() => new List<TodoItem>() {
+        //         new TodoItem { TodoItemId = 1001, Name = "Go shopping", IsComplete = false},
+        //         new TodoItem { TodoItemId = 1002, Name = "feed cat", IsComplete = false }
+        //    };
     }
 }

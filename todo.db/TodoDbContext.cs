@@ -14,6 +14,7 @@ namespace todo.db
         {
         }
 
+        protected DbSet<SupportedFeature> SupportedFeatures { get; set; }
         protected DbSet<TodoItem> TodoItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,6 +25,11 @@ namespace todo.db
 
             modelBuilder.Entity<TodoItem>()
                 .Property(t => t.Created).HasDefaultValueSql("getdate()");
+        }
+
+        async Task<List<SupportedFeature>> ITodoDbContext.ListSupportedFeatures()
+        {
+            return await SupportedFeatures.ToListAsync();
         }
 
         async Task<List<TodoItem>> ITodoDbContext.ListTodoItems()
