@@ -1,0 +1,90 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+name: 1.0$(Rev:.r)
+trigger:
+- main
+
+pool:
+  name: Default
+  demands: 
+    - agent.name -equals OCRA 
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  artifactName: 'todo.db.api'
+
+steps:
+- task: UseDotNet@2
+  enabled: false
+  inputs:
+    packageType: sdk
+    useGlobalJson: true
+    
+- task: DotNetCoreCLI@2
+  displayName: 'Restore db context dependencies'
+  inputs:
+    command: 'restore'
+    projects: '**/todo.db.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore web api dependencies'
+  inputs:
+    command: 'restore'
+    projects: '**/$(artifactName).csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore integration test dependencies'
+  inputs:
+    command: 'restore'
+    projects: '**/$(artifactName).IntegrationTest.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build db context - $(buildConfiguration)'
+  inputs:
+    command: 'build'
+    arguments: '--no-restore --configuration $(buildConfiguration)'
+    projects: '**/todo.db.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build web api - $(buildConfiguration)'
+  inputs:
+    command: 'build'
+    arguments: '--no-restore --configuration $(buildConfiguration)'
+    projects: '**/$(artifactName).csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build integration tests - $(buildConfiguration)'
+  inputs:
+    command: 'build'
+    arguments: '--configuration $(buildConfiguration)'
+    projects: '**/$(artifactName).IntegrationTest.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run integration tests'
+  enabled: true
+  inputs:
+    command: 'test'
+    projects: '**/$(artifactName).IntegrationTest.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+    publishTestResults: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build webiste zip-artifact'
+  inputs:
+    command: 'publish'
+    projects: '**/$(artifactName).csproj'
+    publishWebProjects: false
+    arguments: '--no-build /p:Version=$(Build.BuildNumber) --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(ArtifactName)'
+    zipAfterPublish: true
+    
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish build atrifacts in pipeline'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(ArtifactName)'
+    ArtifactName: 'todo-web'
+    publishLocation: 'Container'
