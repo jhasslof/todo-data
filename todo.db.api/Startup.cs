@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +24,18 @@ namespace todo.db.api
             //services.AddDbContext<ITodoDbContext, TodoDbContext>(opt =>
             //    opt.UseInMemoryDatabase("TodoList"));
 
+            //services.AddDbContext<ITodoDbContext, TodoDbContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("LocalConnection")));
+
             services.AddDbContext<ITodoDbContext, TodoDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            {
+                SqlAuthenticationProvider.SetProvider(
+                    SqlAuthenticationMethod.ActiveDirectoryDeviceCodeFlow,
+                    new CustomAzureSQLAuthProvider()
+                );
+                var sqlConnection = new SqlConnection(Configuration.GetConnectionString("AzureConnection"));
+                options.UseSqlServer(sqlConnection);
+            });
 
             services.AddScoped<IFeatureFlags>(p => new FeatureFlags(p.GetRequiredService<IConfiguration>(), p.GetRequiredService<ITodoDbContext>()));
             services.AddControllers();

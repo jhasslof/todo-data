@@ -22,6 +22,10 @@ c:\> choco install postman
 https://docs.microsoft.com/en-us/ef/core/modeling/
 
 
+# Use Managed IDentity DB Connection
+
+https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-connect-msi?tabs=windowsclient%2Cdotnetcore
+
 
 ## Integration test and db initalization
 * https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-3.1#customize-webapplicationfactory
