@@ -42,11 +42,20 @@ namespace todo.db.api
 
         private static LaunchDarklyCredentials LaunchDarklyCredentials { get; set; }
 
+        //
+        // NB! Add all Feature Flags supported by TodoItemsController here
+        //
         private readonly static IEnumerable<FeatureFlagDTO> _apiSupportedFeatureFlags = new[] {
             new FeatureFlagDTO {
                 Key = "todo.db.api-TodoItems",
                 PreReqKeys = new List<FeatureFlagDTO>{
                     new FeatureFlagDTO { Key = "todo.db-TodoItems" }
+                }
+            },
+            new FeatureFlagDTO {
+                Key = "ta-7-notes-api",
+                PreReqKeys = new List<FeatureFlagDTO>{
+                    new FeatureFlagDTO { Key = "ta-7-notes-db" }
                 }
             }
         };
