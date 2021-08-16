@@ -8,48 +8,29 @@ using todo.db.api.Models;
 
 namespace todo.db.api
 {
-    public interface IFeatureFlags
-    {
-        IEnumerable<FeatureFlagDTO> GetFeatureFlagList();
-
-        bool FeatureFlagIsActive(string featureFlagKey);
-    }
-
-    public class FeatureFlags : IFeatureFlags
-    {
-        IEnumerable<FeatureFlagDTO> _featureFlags;
-
-        public FeatureFlags(IConfiguration configuration, ITodoDbContext context)
-        {
-            _featureFlags = FeatureFlagsFactory.GetFeatureFlagsInUse(configuration, context);
-        }
-
-        IEnumerable<FeatureFlagDTO> IFeatureFlags.GetFeatureFlagList()
-        {
-            return _featureFlags;
-        }
-
-        public bool FeatureFlagIsActive(string featureFlagKey)
-        {
-            var flag = _featureFlags.SingleOrDefault(f => f.Key == featureFlagKey);
-            return (flag == null ? false : flag.State);
-        }
-    }
-
     public class FeatureFlagsFactory
     {
-        private static readonly object bindConfigLock = new object();
-
-        private static LaunchDarklyCredentials LaunchDarklyCredentials { get; set; }
-
+        //
+        // Add all Feature Flags supported by TodoItemsController here
+        //
         private readonly static IEnumerable<FeatureFlagDTO> _apiSupportedFeatureFlags = new[] {
             new FeatureFlagDTO {
                 Key = "todo.db.api-TodoItems",
                 PreReqKeys = new List<FeatureFlagDTO>{
                     new FeatureFlagDTO { Key = "todo.db-TodoItems" }
                 }
+            },
+            new FeatureFlagDTO {
+                Key = "ta-7-notes-api",
+                PreReqKeys = new List<FeatureFlagDTO>{
+                    new FeatureFlagDTO { Key = "ta-7-notes-db" }
+                }
             }
         };
+
+        private static readonly object bindConfigLock = new object();
+
+        private static LaunchDarklyCredentials LaunchDarklyCredentials { get; set; }
 
         public static IEnumerable<FeatureFlagDTO> GetFeatureFlagsInUse(IConfiguration configuration, ITodoDbContext context)
         {
@@ -69,7 +50,11 @@ namespace todo.db.api
             {
                 foreach (var dbFlag in apiFlag.PreReqKeys)
                 {
-                    dbFlag.State = dbSupportedFeatureFlags.Any(f => f.Key == dbFlag.Key);
+                    var preReq = dbSupportedFeatureFlags.SingleOrDefault(f => f.Key == dbFlag.Key);
+                    if (preReq != null)
+                    {
+                        dbFlag.State = preReq.State;
+                    }
                 }
             }
 

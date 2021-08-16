@@ -12,18 +12,29 @@ namespace todo.db.api.Mappers
             _featureFlags = featureFlags;
         }
 
-        public TodoItem Map(TodoItemDTO todoItemDto) =>
-            new TodoItem
+        public TodoItem Map(TodoItemDTO todoItemDto)
+        {
+            var todoItem = new TodoItem
             {
                 TodoItemId = todoItemDto.Id,
                 Name = todoItemDto.Name,
                 IsComplete = todoItemDto.IsComplete
             };
+            if(_featureFlags.FeatureFlagIsActive("ta-7-notes-api"))
+            {
+                todoItem.Notes = todoItemDto.Notes;
+            }
+            return todoItem;
+        }
 
         public void Fill(TodoItem todoItem, TodoItemDTO todoItemDto)
         {
             todoItem.Name = todoItemDto.Name;
             todoItem.IsComplete = todoItemDto.IsComplete;
+            if (_featureFlags.FeatureFlagIsActive("ta-7-notes-api"))
+            {
+                todoItem.Notes = todoItemDto.Notes;
+            }
         }
     }
 }
