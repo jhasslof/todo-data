@@ -11,9 +11,12 @@ namespace todo.db.api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        IWebHostEnvironment _webHostEnvironment;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            _webHostEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -21,21 +24,24 @@ namespace todo.db.api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<ITodoDbContext, TodoDbContext>(opt =>
-            //    opt.UseInMemoryDatabase("TodoList"));
 
-            //services.AddDbContext<ITodoDbContext, TodoDbContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("LocalConnection")));
-
-            services.AddDbContext<ITodoDbContext, TodoDbContext>(options =>
+            if (_webHostEnvironment.IsEnvironment("Local"))
             {
-                SqlAuthenticationProvider.SetProvider(
-                    SqlAuthenticationMethod.ActiveDirectoryDeviceCodeFlow,
-                    new CustomAzureSQLAuthProvider()
-                );
-                var sqlConnection = new SqlConnection(Configuration.GetConnectionString("AzureConnection"));
-                options.UseSqlServer(sqlConnection);
-            });
+                services.AddDbContext<ITodoDbContext, TodoDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("LocalConnection")));
+            }
+            else
+            {
+                services.AddDbContext<ITodoDbContext, TodoDbContext>(options =>
+                {
+                    SqlAuthenticationProvider.SetProvider(
+                        SqlAuthenticationMethod.ActiveDirectoryDeviceCodeFlow,
+                        new CustomAzureSQLAuthProvider()
+                    );
+                    var sqlConnection = new SqlConnection(Configuration.GetConnectionString("AzureConnection"));
+                    options.UseSqlServer(sqlConnection);
+                });
+            }
 
             services.AddScoped<IFeatureFlags>(p => new FeatureFlags(p.GetRequiredService<IConfiguration>(), p.GetRequiredService<ITodoDbContext>()));
             services.AddControllers();
@@ -47,7 +53,7 @@ namespace todo.db.api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsEnvironment("Local"))
             {
                 app.UseDeveloperExceptionPage();
             }
