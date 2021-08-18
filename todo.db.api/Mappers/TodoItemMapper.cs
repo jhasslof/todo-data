@@ -20,7 +20,7 @@ namespace todo.db.api.Mappers
                 Name = todoItemDto.Name,
                 IsComplete = todoItemDto.IsComplete
             };
-            if(_featureFlags.FeatureFlagIsActive("ta-7-notes-api"))
+            if(_featureFlags.FeatureFlagIsActive("ta-10-notes-todo-data-api"))
             {
                 todoItem.Notes = todoItemDto.Notes;
             }
@@ -31,7 +31,7 @@ namespace todo.db.api.Mappers
         {
             todoItem.Name = todoItemDto.Name;
             todoItem.IsComplete = todoItemDto.IsComplete;
-            if (_featureFlags.FeatureFlagIsActive("ta-7-notes-api"))
+            if (_featureFlags.FeatureFlagIsActive("ta-10-notes-todo-data-api"))
             {
                 todoItem.Notes = todoItemDto.Notes;
             }
