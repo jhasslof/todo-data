@@ -19,12 +19,6 @@ namespace todo.db.api
                 PreReqKeys = new List<FeatureFlagDTO>{
                     new FeatureFlagDTO { Key = "todo.db-TodoItems" }
                 }
-            },
-            new FeatureFlagDTO {
-                Key = "ta-7-notes-api",
-                PreReqKeys = new List<FeatureFlagDTO>{
-                    new FeatureFlagDTO { Key = "ta-7-notes-db" }
-                }
             }
         };
 
