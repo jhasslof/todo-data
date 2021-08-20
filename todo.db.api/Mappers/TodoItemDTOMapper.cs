@@ -25,6 +25,10 @@ namespace todo.db.api.Mappers
                 Name = todoItem.Name,
                 IsComplete = todoItem.IsComplete
             };
+            if (_featureFlags.FeatureFlagIsActive("ta-10-notes-todo-data-api"))
+            {
+                todoItemDto.Notes = todoItem.Notes;
+            }
             return todoItemDto;
         }
 
